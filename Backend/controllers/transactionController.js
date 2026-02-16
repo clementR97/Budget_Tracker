@@ -48,6 +48,9 @@ export const getTransactionById = async (req, res) => {
  */
 export const createTransaction = async (req,res)=>{
     try{
+        console.log('👤 req.user:', req.user);
+        console.log('🆔 req.user._id:', req.user._id);
+
         const{type,category,amount,description,date} = req.body
 
         // validate
@@ -63,14 +66,18 @@ export const createTransaction = async (req,res)=>{
         }
         // create the transaction
         const transaction = new Transaction({
-            userId: req.body._id,
+            userId: req.user._id,
             type,
             category,
             amount,
             description,
             date: date || Date.now(),
         })
+        console.log('💰 Transaction à créer:', transaction);
+
         await transaction.save()
+        console.log('✅ Transaction créée avec succès');
+        
         res.status(201).json(transaction)
     }catch(error){
         console.error('Erreur createTransaction:',error)

@@ -135,16 +135,31 @@ const Dashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log('🎨 FRONTEND - Début handleSubmit');
+    console.log('📝 FRONTEND - formData:', formData);
+    console.log('✏️ FRONTEND - editingTransaction:', editingTransaction);
+
+
     try {
       if (editingTransaction) {
+
+        console.log('🔄 FRONTEND - Mode édition');
+
         await transactionAPI.update(editingTransaction._id, formData);
       } else {
-        await transactionAPI.create(formData);
+
+        console.log('➕ FRONTEND - Mode création');
+        console.log('📤 FRONTEND - Appel API create avec:', formData);
+
+        const result = await transactionAPI.create(formData);
+        console.log('✅ FRONTEND - Résultat:', result);
       }
       
       await fetchData();
       handleCloseDialog();
     } catch (err) {
+      console.error('❌ FRONTEND - Erreur:', err);
+      console.error('❌ FRONTEND - Message:', err.message);
       setError(err.message);
     }
   };

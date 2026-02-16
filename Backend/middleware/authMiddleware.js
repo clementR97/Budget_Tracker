@@ -13,12 +13,17 @@ export const protect = async (req,res,next)=>{
         try{
             // Recover the token (format: "Bearer token")
             token = req.headers.authorization.split(' ')[1]
+            console.log('🔑 Token reçu:', token);
+
             //verifie and decod the token
             const decoded = jwt.verify(token,process.env.JWT_SECRET)
+            console.log('📦 Token décodé:', decoded);
+            console.log('🆔 ID utilisateur:', decoded.id);
 
             // Add user in the request( without the password)
             req.user = await User.findById(decoded.id).select('-password')
-
+            console.log('👤 Utilisateur trouvé:', req.user);
+            
             if(!req.user){
                 return res.status(401).json({message:'Utilisateur non trouvé'})
             }

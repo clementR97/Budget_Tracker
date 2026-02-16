@@ -141,7 +141,7 @@ export const transactionAPI = {
     },
     // create a new transaction
     create: async(data)=>{
-        const reponse = await fetch(`${API_URL}/transactions/${id}`,{
+        const reponse = await fetch(`${API_URL}/transactions`,{
             method: 'POST',
             headers: getHeaders(true),
             body:JSON.stringify(data),
@@ -149,39 +149,39 @@ export const transactionAPI = {
         return handleReponse(reponse)
     },
     // Update of transaction
-    update: async(id,data)=>{
-        const response = await fetch(`${API_URL}/transactions/${id}`, {
+    update: async(id, data)=>{
+        const reponse = await fetch(`${API_URL}/transactions/${id}`, {
       method: 'PUT',
       headers: getHeaders(true),
       body: JSON.stringify(data),
     });
-    return handleReponse(response);
+    return handleReponse(reponse);
     },
 
     //delete one transaction
     delete: async(id)=>{
-        const response = await fetch(`${API_URL}/transactions/${id}`, {
+        const reponse = await fetch(`${API_URL}/transactions/${id}`, {
             method: 'DELETE',
             headers: getHeaders(true),
           });
-          return handleReponse(response);
+          return handleReponse(reponse);
     },
     // Statiques
     getStats: async () => {
-        const response = await fetch(`${API_URL}/transactions/stats`, {
+        const reponse = await fetch(`${API_URL}/transactions/stats`, {
           method: 'GET',
           headers: getHeaders(true),
         });
-        return handleReponse(response);
+        return handleReponse(reponse);
 },
     // Filtrer les transactions
     filter: async (filters) => {
         const params = new URLSearchParams(filters);
-        const response = await fetch(`${API_URL}/transactions/filter?${params}`, {
+        const reponse = await fetch(`${API_URL}/transactions/filter?${params}`, {
         method: 'GET',
         headers: getHeaders(true),
         });
-        return handleReponse(response);
+        return handleReponse(reponse);
     },
 };
 
