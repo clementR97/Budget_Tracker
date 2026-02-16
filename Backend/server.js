@@ -55,6 +55,8 @@ app.use((err,req,res,next)=>{
 // start the server
 const PORT = process.env.PORT || 2000
 app.listen(PORT, () => {
-    console.log(`🚀 Serveur lancé sur le port ${PORT}`)
-    console.log(`📍 http://localhost:${PORT}`)
+  console.log(`🚀 Serveur lancé sur le port ${PORT}`);
+  console.log(`📍 API disponible sur http://localhost:${PORT}`);
+  console.log(`🔐 Auth: http://localhost:${PORT}/api/auth`);
+  console.log(`💰 Transactions: http://localhost:${PORT}/api/transactions`);
 })

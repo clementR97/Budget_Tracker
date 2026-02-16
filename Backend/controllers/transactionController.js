@@ -1,5 +1,5 @@
 // Backend/controllers/transactionController.js
-import Transaction from "../models/Transaction";
+import Transaction from "../models/Transaction.js";
 
 /** 
  * @route GET/api/transactions
