@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import connectDB from './config/db.js'
 import authRouter from './routes/authRoutes.js'
+import transactionRoutes from './routes/transactionRoutes.js'
 dotenv.config()
 connectDB()
 
@@ -18,18 +19,31 @@ app.use(cors({
   methods:['GET','POST','PUT','DELETE','PATCH'],
   allowedHeaders:['Content-Type','Authorization'],
 }))
-// Road
+// Road of authentification
 app.use('/api/auth',authRouter)
 
+// Road of transaction
+app.use('/api/transactions',transactionRoutes)
+
 app.get('/', (req, res) => {
-  res.json({ message: 'API Auth fonctionne ! 🚀' })
+  res.json({ 
+    message: '✅ Budget Tracker API is running',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      transactions: '/api/transactions' }
+    })
 })
 
 // Road no find
 app.use((req,res)=>{
-    res.status(404).json({message: 'Route non trouvée'})
+    res.status(404).json({
+      message: 'Route non trouvée',
+      path: req.originalUrl
+    })
 })
 
+// gestion of error generaly
 app.use((err,req,res,next)=>{
   console.error('Erreur serveur:',err)
     res.status(500).json({
