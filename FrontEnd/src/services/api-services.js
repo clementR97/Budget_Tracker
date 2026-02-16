@@ -17,7 +17,7 @@ const handleReponse = async(reponse)=>{
             }
             
         }
-        const error = data?.message || 'Une erreur est sruvenue'
+        const error = data?.message || 'Une erreur est survenue'
         throw new Error(error)
     }
     return data
@@ -35,11 +35,9 @@ const getHeaders = (includeAuth  = true)=>{
     }
     return headers
 }
-// _________________________AUTHENTICATION_____________________________
+// _________________________AUTHENTICATION AUTH_____________________________
 export const authAPI = {
     //Sign-up
-
-
     register: async(userData) =>{
         const reponse = await fetch(`${API_URL}/auth/register`,{
             method:'POST',
@@ -122,7 +120,75 @@ export const authAPI = {
     }
 
 }
+// ==================== TRANSACTION ====================
+export const transactionAPI = {
+    // Recover all transaction
+    getAll: async()=>{
+        const reponse = await fetch(`${API_URL}/transactions`,{
+            method: 'GET',
+            headers: getHeaders(true),
+        })
+        return handleReponse(reponse)
+    },
 
+    //recover one transaction with id
+    getById: async(id)=>{
+        const reponse = await fetch(`${API_URL}/transactions/${id}`,{
+            method: 'GET',
+            headers: getHeaders(true)
+        })
+        return handleReponse(reponse)
+    },
+    // create a new transaction
+    create: async(data)=>{
+        const reponse = await fetch(`${API_URL}/transactions/${id}`,{
+            method: 'POST',
+            headers: getHeaders(true),
+            body:JSON.stringify(data),
+        })
+        return handleReponse(reponse)
+    },
+    // Update of transaction
+    update: async(id,data)=>{
+        const response = await fetch(`${API_URL}/transactions/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(true),
+      body: JSON.stringify(data),
+    });
+    return handleReponse(response);
+    },
+
+    //delete one transaction
+    delete: async(id)=>{
+        const response = await fetch(`${API_URL}/transactions/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders(true),
+          });
+          return handleReponse(response);
+    },
+    // Statiques
+    getStats: async () => {
+        const response = await fetch(`${API_URL}/transactions/stats`, {
+          method: 'GET',
+          headers: getHeaders(true),
+        });
+        return handleReponse(response);
+},
+    // Filtrer les transactions
+    filter: async (filters) => {
+        const params = new URLSearchParams(filters);
+        const response = await fetch(`${API_URL}/transactions/filter?${params}`, {
+        method: 'GET',
+        headers: getHeaders(true),
+        });
+        return handleReponse(response);
+    },
+};
+
+export default {
+    auth: authAPI,
+    transactions: transactionAPI,
+  };
 
 // ==================== CRUD GÉNÉRIQUE ====================
 
