@@ -77,7 +77,7 @@ export const createTransaction = async (req,res)=>{
 
         await transaction.save()
         console.log('✅ Transaction créée avec succès');
-        
+
         res.status(201).json(transaction)
     }catch(error){
         console.error('Erreur createTransaction:',error)
@@ -137,7 +137,7 @@ export const deleteTransaction = async(req,res)=>{
     try{
         const transaction = await Transaction.findOneAndDelete({
             _id: req.params.id,
-            userId: req.params._id //secure
+            userId: req.user._id //secure
         })
         if(!transaction){
             return res.status(404).json({message:'Transaction non trouvée' })
