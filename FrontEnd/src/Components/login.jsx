@@ -44,6 +44,8 @@ const SignInContainer = styled(Stack)(({theme})=>({
     height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
     minHeight: '100%',
     padding: theme.spacing(2),
+    overflowY: 'auto',
+    overflowX: 'hidden',
     [theme.breakpoints.up('sm')]: {
       padding: theme.spacing(4),
     },
@@ -151,7 +153,7 @@ const handleSubmit = async (e)=>{
     return(
         <>
         <CssBaseline enableColorScheme/>
-        <SignInContainer direction="column" justifyContent="space-between">
+        <SignInContainer direction="column" justifyContent="flex-start">
             {/* <ColorModeSelect sx={{position: 'fixed',top:'1rem',right:'1rem'}}/> */}
             <Card cariant="outlined">
                  
@@ -244,7 +246,7 @@ const handleSubmit = async (e)=>{
                             Forgot your password?
                         </Link>
                 </Box>
-                <Divider>or</Divider>
+                {/* <Divider>or</Divider>
                 <Box sx={{display: 'flex', flexDirection:'column', gap:2}}>
                     <Button 
                     fullWidth
@@ -261,7 +263,8 @@ const handleSubmit = async (e)=>{
                            startIcon={<FacebookIcon />}
                         >
                         Sign in with Facebook
-                        </Button>
+                        </Button> */}
+                        <Box sx={{display: 'flex', flexDirection:'column', gap:2}}>
                 <Typography sx={{ textAlign: 'center'}}>
                 Don&apos;t have an account?{' '}
                         <Link 

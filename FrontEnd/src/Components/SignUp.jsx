@@ -43,6 +43,8 @@ const SignUpContainer = styled(Stack)(({theme})=>({
     height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
     minHeight: '100%',
     padding: theme.spacing(2),
+    overflowY: 'auto',
+    overflowX: 'hidden',
     [theme.breakpoints.up('sm')]: {
       padding: theme.spacing(4),
     },
@@ -134,7 +136,7 @@ const SignUp =()=>{
             return (
             <>
             <CssBaseline enableColorScheme/>
-            <SignUpContainer direction="column" justifyContent="space-between">
+            <SignUpContainer direction="column" justifyContent="flex-start">
                 <Card variant='outlined'>
                 <RouterLink to="/">
                  <SitemarkIcon/>
@@ -231,7 +233,7 @@ const SignUp =()=>{
                                     </Button>
 
                     </Box>
-                    <Divider>
+                    {/* <Divider>
                         <Typography sx={{color:'text.secondary'}}>or</Typography>
                     </Divider>
                     <Box sx={{display:'flex', flexDirection:'column',gap:2}}>
@@ -248,7 +250,8 @@ const SignUp =()=>{
                         onClick={()=>alert('Sign up with Facebook')}
                         startIcon={<FacebookIcon/>}>
                             Sign up with Facebook
-                        </Button>
+                        </Button> */}
+                        <Box sx={{display:'flex', flexDirection:'column',gap:2}}>
                         <Typography sx={{ textAlign: 'center' }}>
                                 Already have an account?{' '}
                                 <RouterLink
