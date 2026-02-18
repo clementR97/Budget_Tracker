@@ -88,14 +88,29 @@ import { Link } from "react-router-dom";
                                             <MenuItem>Blog</MenuItem>
 
                                             <Divider sx={{my:3}}/>
-                                             <MenuItem>
-                                                <Button color="primary" variant="contained" fullWidth>
+                                            <MenuItem sx={{px:0, py:1}}>
+                                                <Button 
+                                                    component={Link} 
+                                                    to="/Sign-up" 
+                                                    color="primary" 
+                                                    variant="contained" 
+                                                    fullWidth
+                                                    onClick={toggleDrawer(false)}
+                                                >
                                                     Sign up
                                                 </Button>
-                                                <Button color="primary" variant="contained" fullWidth>
+                                            </MenuItem>
+                                            <MenuItem sx={{px:0, py:1}}>
+                                                <Button 
+                                                    component={Link} 
+                                                    to="/Sign-in" 
+                                                    color="primary" 
+                                                    variant="text" 
+                                                    fullWidth
+                                                    onClick={toggleDrawer(false)}
+                                                >
                                                     Sign in
                                                 </Button>
-
                                             </MenuItem> 
                                     </Box>
 
