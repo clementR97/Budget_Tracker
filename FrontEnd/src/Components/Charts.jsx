@@ -268,7 +268,7 @@ const Charts = ({transactions, stats})=>{
                         <Typography variant="h6" gutterBottom>
                         📊 Revenus vs Depenses
                         </Typography>
-                        <Box sx={{height:500}}>
+                        <Box sx={{height:400}}>
                             <Bar data={incomeVsExpenseData} options={barOptions}/>
                         </Box>
                     </Paper>
@@ -280,7 +280,7 @@ const Charts = ({transactions, stats})=>{
                         <Typography variant="h6" gutterBottom>
                         📈 Évolution du solde
                         </Typography>
-                        <Box sx={{height: 500}}>
+                        <Box sx={{height: 400}}>
                             <Line data={balanceOverTimeData} options={lineOptions}/>
                         </Box>
                     </Paper>
