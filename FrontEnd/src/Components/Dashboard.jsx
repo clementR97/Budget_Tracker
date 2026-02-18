@@ -1,8 +1,10 @@
 // Components/Dashboard.jsx
 // Dashboard simple pour tester l'authentification
-
+import { useAuth } from '../context/AuthContext.jsx';
+import { transactionAPI } from '../services/api-services.js';
+import Charts from './Charts';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useState,useEffect } from 'react';
 import {
   Container,
   Box,
@@ -32,6 +34,8 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Add,
@@ -41,10 +45,12 @@ import {
   TrendingUp,
   TrendingDown,
   AccountBalance,
+  TableChart,
+  BarChart,
 } from '@mui/icons-material';
 
-import { useAuth } from '../context/AuthContext';
-import { transactionAPI } from '../services/api-services.js';
+
+
 
 
 const Dashboard = () => {
@@ -58,6 +64,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [tabValue, setTabValue] = useState(0); // ⭐ NOUVEAU - Pour switcher entre tableau et graphiques
   
   // Formulaire
   const [formData, setFormData] = useState({
@@ -69,8 +76,8 @@ const Dashboard = () => {
   });
 
   const categories = {
-    income: ['Salaire', 'Freelance', 'Investissement'],
-    expense: ['Nourriture', 'Transport', 'Logement', 'Loisirs', 'Shopping', 'Santé', 'Autre'],
+    income: ['Salaire', 'Freelance', 'Investissement', 'Autre revenu'],
+    expense: ['Nourriture', 'Transport', 'Logement', 'Loisirs', 'Shopping', 'Santé', 'Éducation', 'Autre dépense'],
   };
 
   // Charger les données au montage
@@ -127,7 +134,6 @@ const Dashboard = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value,
-      // Reset category si on change de type
       ...(name === 'type' && { category: '' })
     }));
   };
@@ -135,31 +141,16 @@ const Dashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log('🎨 FRONTEND - Début handleSubmit');
-    console.log('📝 FRONTEND - formData:', formData);
-    console.log('✏️ FRONTEND - editingTransaction:', editingTransaction);
-
-
     try {
       if (editingTransaction) {
-
-        console.log('🔄 FRONTEND - Mode édition');
-
         await transactionAPI.update(editingTransaction._id, formData);
       } else {
-
-        console.log('➕ FRONTEND - Mode création');
-        console.log('📤 FRONTEND - Appel API create avec:', formData);
-
-        const result = await transactionAPI.create(formData);
-        console.log('✅ FRONTEND - Résultat:', result);
+        await transactionAPI.create(formData);
       }
       
       await fetchData();
       handleCloseDialog();
     } catch (err) {
-      console.error('❌ FRONTEND - Erreur:', err);
-      console.error('❌ FRONTEND - Message:', err.message);
       setError(err.message);
     }
   };
@@ -189,6 +180,11 @@ const Dashboard = () => {
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('fr-FR');
+  };
+
+  // ⭐ NOUVEAU - Gérer le changement d'onglet
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
   };
 
   if (loading) {
@@ -271,83 +267,99 @@ const Dashboard = () => {
           </Grid>
         </Grid>
 
-        {/* En-tête liste */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h5">Transactions</Typography>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={() => handleOpenDialog()}
-          >
-            Nouvelle transaction
-          </Button>
+        {/* ⭐ NOUVEAU - Onglets Tableau / Graphiques */}
+        <Box sx={{ mb: 3 }}>
+          <Tabs value={tabValue} onChange={handleTabChange}>
+            <Tab icon={<TableChart />} label="Tableau" />
+            <Tab icon={<BarChart />} label="Graphiques" />
+          </Tabs>
         </Box>
 
-        {/* Liste des transactions */}
-        {transactions.length === 0 ? (
-          <Paper sx={{ p: 4, textAlign: 'center' }}>
-            <Typography variant="h6" color="text.secondary">
-              Aucune transaction
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Ajoutez votre première transaction pour commencer
-            </Typography>
-          </Paper>
+        {/* ⭐ NOUVEAU - Affichage conditionnel selon l'onglet */}
+        {tabValue === 0 ? (
+          <>
+            {/* En-tête liste */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+              <Typography variant="h5">Transactions</Typography>
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => handleOpenDialog()}
+              >
+                Nouvelle transaction
+              </Button>
+            </Box>
+
+            {/* Liste des transactions */}
+            {transactions.length === 0 ? (
+              <Paper sx={{ p: 4, textAlign: 'center' }}>
+                <Typography variant="h6" color="text.secondary">
+                  Aucune transaction
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Ajoutez votre première transaction pour commencer
+                </Typography>
+              </Paper>
+            ) : (
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Catégorie</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell align="right">Montant</TableCell>
+                      <TableCell align="center">Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {transactions.map((transaction) => (
+                      <TableRow key={transaction._id}>
+                        <TableCell>{formatDate(transaction.date)}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={transaction.type === 'income' ? 'Revenu' : 'Dépense'}
+                            color={transaction.type === 'income' ? 'success' : 'error'}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>{transaction.category}</TableCell>
+                        <TableCell>{transaction.description || '-'}</TableCell>
+                        <TableCell align="right">
+                          <Typography
+                            color={transaction.type === 'income' ? 'success.main' : 'error.main'}
+                            fontWeight="bold"
+                          >
+                            {transaction.type === 'income' ? '+' : '-'}
+                            {formatAmount(transaction.amount)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleOpenDialog(transaction)}
+                          >
+                            <Edit />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => handleDelete(transaction._id)}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </>
         ) : (
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Catégorie</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell align="right">Montant</TableCell>
-                  <TableCell align="center">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {transactions.map((transaction) => (
-                  <TableRow key={transaction._id}>
-                    <TableCell>{formatDate(transaction.date)}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={transaction.type === 'income' ? 'Revenu' : 'Dépense'}
-                        color={transaction.type === 'income' ? 'success' : 'error'}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>{transaction.category}</TableCell>
-                    <TableCell>{transaction.description || '-'}</TableCell>
-                    <TableCell align="right">
-                      <Typography
-                        color={transaction.type === 'income' ? 'success.main' : 'error.main'}
-                        fontWeight="bold"
-                      >
-                        {transaction.type === 'income' ? '+' : '-'}
-                        {formatAmount(transaction.amount)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton
-                        size="small"
-                        onClick={() => handleOpenDialog(transaction)}
-                      >
-                        <Edit />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDelete(transaction._id)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          // ⭐ NOUVEAU - Onglet Graphiques
+          <Charts transactions={transactions} stats={stats} />
         )}
       </Container>
 
