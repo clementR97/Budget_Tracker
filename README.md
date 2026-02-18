@@ -510,10 +510,10 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 **Votre Nom**
 
-- 🌐 Portfolio : [votre-site.com](https://votre-site.com)
-- 💼 LinkedIn : [Votre Profil](https://linkedin.com/in/votre-profil)
-- 🐙 GitHub : [@votre-username](https://github.com/votre-username)
-- 📧 Email : votre.email@example.com
+<!-- - 🌐 Portfolio : [votre-site.com](https://votre-site.com) -->
+- 💼 LinkedIn : [Clément Roland](https://linkedin.com/in/roland-971)
+- 🐙 GitHub : [@clementR97](https://github.com/clementR97)
+- 📧 Email : clementroland52@gmail.com
 
 ---
 
@@ -540,8 +540,8 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 ## 💬 Support
 
 Pour toute question ou problème :
-- 🐛 Ouvrez une [issue](https://github.com/votre-username/budget-tracker/issues)
-- 💬 Contactez-moi par [email](mailto:votre.email@example.com)
+- 🐛 Ouvrez une [issue](https://github.com/clementR97/budget-tracker/issues)
+- 💬 Contactez-moi par [email](mailto:clementroland52@gmail.com)
 
 ---
 
@@ -549,4 +549,4 @@ Pour toute question ou problème :
 
 ---
 
-*Développé avec ❤️ et beaucoup de ☕ par [Votre Nom]*
+*Développé avec ❤️ et beaucoup de ☕ par Roland*
