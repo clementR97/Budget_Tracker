@@ -2,7 +2,7 @@
 // Dashboard simple pour tester l'authentification
 import { useAuth } from '../context/AuthContext.jsx';
 import { transactionAPI } from '../services/api-services.js';
-import Charts from './Charts';
+import Charts from './Charts.jsx';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {

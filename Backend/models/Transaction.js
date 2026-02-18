@@ -73,7 +73,7 @@ transactionSchema.statics.getStats = async function(userId){
     const balance = totalIncome - totalExpense
     
     // Stats by category (unique expense )
-    const expenseByCategory = transactions
+    const expensesByCategory = transactions
             .filter((t)=> t.type === 'expense')
             .reduce((acc,t)=>{
                 acc[t.category] = (acc[t.category]|| 0) + t.amount
@@ -84,7 +84,7 @@ transactionSchema.statics.getStats = async function(userId){
         totalIncome,
         totalExpense,
         balance,
-        expenseByCategory,
+        expensesByCategory,
         transactionCount: transactions.length,
     };
 };

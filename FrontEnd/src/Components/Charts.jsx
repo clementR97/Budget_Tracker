@@ -31,13 +31,29 @@ ChartJS.register(
 )
 
 const Charts = ({transactions, stats})=>{
+
+    console.log('📊 Charts - transactions:', transactions);
+  console.log('📊 Charts - stats:', stats);
+  console.log('📊 Charts - expensesByCategory:', stats?.expensesByCategory);
+  
     // ==================== GRAPHIQUE 1 : DÉPENSES PAR CATÉGORIE (PIE) ====================
     const expensesByCategoryData = useMemo(()=>{
-        if(!stats?.expensesByCategoryData) return null
+        console.log('🥧 Calcul du camembert...');
+        if(!stats?.expensesByCategory){
+            console.log('❌ Pas de expensesByCategory dans stats');
+         return null
+        }
 
-        const categories = Object.keys(stats.expensesByCategoryData)
-        const amounts = Object.values(stats.expensesByCategoryData)
+        const categories = Object.keys(stats.expensesByCategory)
+        const amounts = Object.values(stats.expensesByCategory)
 
+        console.log('📊 Catégories:', categories);
+    console.log('💰 Montants:', amounts);
+
+    if (categories.length === 0) {
+        console.log('⚠️ Aucune catégorie de dépenses');
+        return null;
+      }
         // color for differnce categories
         const colors = [
             '#FF6384', // Rose
@@ -50,19 +66,21 @@ const Charts = ({transactions, stats})=>{
             '#C9CBCF', // Gris
         ];
 
-        return{
-            labels : categories,
-            datasets: [
-                {
-                    label: 'Dépenses (€)',
-                    data:amounts,
-                    backgroundColor: colors.slice(0,categories.length),
-                    borderColor: '#fff',
-                    borderWidth:2,
-                },
-            ],
-        };
-    },[stats])
+        const chartData = {
+            labels: categories,
+            datasets: [{
+              label: 'Dépenses (€)',
+              data: amounts,
+              backgroundColor: colors.slice(0, categories.length),
+              borderColor: '#fff',
+              borderWidth: 2,
+            }],
+          };
+          
+          console.log('✅ Données du camembert:', chartData);
+
+        return chartData
+    },[stats]);
 
      // ==================== GRAPHIQUE 2 : REVENUS VS DÉPENSES (BAR) ====================
 
@@ -84,10 +102,10 @@ const Charts = ({transactions, stats})=>{
 
      // ==================== GRAPHIQUE 3 : ÉVOLUTION DU SOLDE (LINE) ====================
      const balanceOverTimeData = useMemo(()=>{
-
+        if (!transactions || transactions.length === 0) return null;
         // Sort transactions with no date
         const sortedTransactions = [...transactions].sort(
-            (a,b)=> new Date(a.date) - new Date(b.date)
+            (a,b) => new Date(a.date) - new Date(b.date)
         )
 
         // Calculate the cumulative balance
@@ -164,7 +182,7 @@ const Charts = ({transactions, stats})=>{
             y:{
                 beginAtZero: true,
                 ticks:{
-                    callbacks: function(value){
+                    callback: function(value){
                         return value + '€';
                     },
                 },
@@ -192,7 +210,7 @@ const Charts = ({transactions, stats})=>{
         scales:{
             y:{
                 ticks:{
-                    callbacks: function (value){
+                    callback: function (value){
                         return value + '€';
                     },
                 },
@@ -214,7 +232,7 @@ const Charts = ({transactions, stats})=>{
     return(
         <Grid container spacing={3}>
             {/* {Graphique 1 : Dépenses par caégorie} */}
-            {expensesByCategoryData && Object.keys(stats.expensesByCategory).length > 0 && (
+            {/* {expensesByCategoryData && Object.keys(stats.expensesByCategory).length > 0 && (
                 <Grid item xs={12} md={6}>
                     <Paper sx={{p:3}}>
                         <Typography variant="h6" gutterBottom>
@@ -225,7 +243,25 @@ const Charts = ({transactions, stats})=>{
                         </Box>
                     </Paper>
                 </Grid>
-            )}
+            )} */}
+
+<Grid item xs={12} md={6}>
+  <Paper sx={{ p: 3 }}>
+    <Typography variant="h6" gutterBottom>
+      📊 Dépenses par catégorie
+    </Typography>
+    <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      {expensesByCategoryData && Object.keys(stats?.expensesByCategory || {}).length > 0 ? (
+        <Pie data={expensesByCategoryData} options={pieOptions} />
+      ) : (
+        <Typography variant="body2" color="text.secondary">
+          Ajoutez des dépenses pour voir ce graphique
+        </Typography>
+      )}
+    </Box>
+  </Paper>
+</Grid>    
+
             {/* Graphique 2 : Revenus vs Dépenses */}
                 <Grid item xs={12} md={6}>
                     <Paper sx={{p:3}}>
@@ -249,7 +285,7 @@ const Charts = ({transactions, stats})=>{
                         </Box>
                     </Paper>
                 </Grid>
-            )};
+            )}
         </Grid>
     );
 };
