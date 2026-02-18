@@ -102,28 +102,38 @@
 
 ## 📸 Screenshots
 
-### Page de connexion
-![Login](./screenshots/login.png)
-*Interface de connexion sécurisée avec validation en temps réel*
-
-### Dashboard - Statistiques
-![Dashboard](./screenshots/dashboard.png)
+### Dashboard - Graphiques interactifs
+![Dashboard](./ScreenShoots/Dashboard.png)
 *Vue d'ensemble avec cartes de statistiques dynamiques*
-
-### Tableau des transactions
-![Transactions](./screenshots/transactions-table.png)
-*Liste complète des transactions avec actions CRUD*
-
-### Graphiques interactifs
-![Charts](./screenshots/charts.png)
 *3 graphiques Chart.js : Camembert, Barres et Ligne*
 
+### Page de connexion
+![Login](./ScreenShoots/login.png)
+*Interface de connexion sécurisée avec validation en temps réel*
+
+### Page d'inscription
+![Login](./ScreenShoots/sign-up.png)
+*Interface d'inscription sécurisée*
+
+### Mot de passe oublié
+![Login](./ScreenShoots/forgotpassword.png)
+*formulaire d'envoie par email*
+
+### Tableau des transactions
+![Transactions](./ScreenShoots/dashboard-tab.png)
+*Liste complète des transactions avec actions CRUD*
+
+
 ### Formulaire d'ajout
-![Add Transaction](./screenshots/add-transaction.png)
+![Add Transaction](./ScreenShoots/dashboard-newtask.png)
 *Formulaire modal pour créer/modifier une transaction*
 
 ### Vue mobile
-![Mobile](./screenshots/mobile.png)
+![Mobile](./ScreenShoots/login-mobile.png)
+![Mobile](./ScreenShoots/sign-in-mobile.png)
+![Mobile](./ScreenShoots/dash-tab-mobile.png)
+![Mobile](./ScreenShoots/dash-grap-mobile.png)
+![Mobile](./ScreenShoots/dash-newtask-mobile.png)
 *Design responsive adapté aux mobiles*
 
 ---
