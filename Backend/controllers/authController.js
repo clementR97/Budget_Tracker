@@ -113,7 +113,7 @@ export const forgotPassword = async(req,res)=>{
             text: `Clique ici pour réinitialiser ton mot de passe:${resetUrl}` 
         })
         // it return also the token in console.log for test
-        console.log('token pour test:',resetToken)
+        //console.log('token pour test:',resetToken)
         // product mode send a email with nodemail
         res.json({
             message:'Email de reinitialisation envoyé(Ethereal)',

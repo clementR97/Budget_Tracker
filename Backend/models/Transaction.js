@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 
-
+// Schéma Mongoose : définit la structure et les validations des données
+// Plus fiable que des validations manuelles dans le controller
 const transactionSchema = new mongoose.Schema(
 
     {
@@ -56,10 +57,12 @@ const transactionSchema = new mongoose.Schema(
     }
 );
 
-// Index for optimise the searche  by user
+// Index composite : accélère les requêtes find/filter par userId + date
+// Sans index, MongoDB fait un scan complet de la collection
 transactionSchema.index({userId:1, date:-1})
 
-// Methode statique for to get the stats for one user
+// Méthode statique : logique dans le modèle plutôt que dans le controller
+// Réutilisable et évite de dupliquer le code de calcul des stats
 transactionSchema.statics.getStats = async function(userId){
     const transactions = await this.find({userId})
     const totalIncome = transactions

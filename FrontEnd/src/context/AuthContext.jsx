@@ -3,7 +3,7 @@ import { authAPI } from "../services/api-services";
 
 const AuthContext = createContext(null)
 
-// Hook for user easy context
+// useAuth : hook personnalisé pour accéder au contexte (évite d'importer useContext partout)
 export const useAuth=()=>{
     const context = useContext(AuthContext)
     if(!context){
@@ -11,13 +11,13 @@ export const useAuth=()=>{
     }
     return context
 } 
-// Provider
+// AuthProvider : Context API plutôt que props drilling pour partager user/login/logout
 export const AuthProvider = ({children})=>{
     const [user,setUser] = useState(null)
     const [loading,setLoading] = useState(true)
     const [error,setError]= useState(null)
 
-    // verify if the user already connecte loading
+    // Au montage : restaure user depuis localStorage si token présent (évite déco au refresh)
     useEffect(()=>{
         const initAuth = () =>{
             try{
@@ -37,22 +37,22 @@ export const AuthProvider = ({children})=>{
         initAuth()
     },[])
 
-    // function connexion
+    // login : appelle authAPI puis met à jour le state user (composants réagissent au changement)
     const login = async (credentials) =>{
         try{
             setError(null)
             setLoading(true)
-            console.log('🔐 AuthContext - Tentative de connexion');
+            //console.log('🔐 AuthContext - Tentative de connexion');
 
             const data = await authAPI.login(credentials)
-            console.log('✅ AuthContext - Données reçues:', data);
+            // console.log('✅ AuthContext - Données reçues:', data);
 
             setUser({
                 _id:data._id,
                 name: data.name,
                 email:data.email,
             })
-            console.log('👤 AuthContext - User set:', user);
+            // console.log('👤 AuthContext - User set:', user);
 
             return data 
         }catch(err){
@@ -64,7 +64,7 @@ export const AuthProvider = ({children})=>{
         }
     }
 
-    // function sign-up 
+    // register : même flux que login, authAPI gère le stockage du token
     const register  = async(userData)=>{
         try{
             setError(null)
@@ -85,14 +85,14 @@ export const AuthProvider = ({children})=>{
         }
     }
 
-    // function logout
+    // logout : nettoie state + localStorage (authAPI.logout ne touche pas au state React)
     const logout = () =>{
         authAPI.logout()
         setUser(null)
         setError(null)
     }
 
-    // forgot password
+    // forgotPassword : délègue à authAPI, pas de mise à jour du state user
     const forgotPassword = async(email)=>{
         try{
             setError(null)
@@ -103,7 +103,7 @@ export const AuthProvider = ({children})=>{
             throw err
         }
     }
-    // reset password
+    // resetPassword : token reçu par email, permet de définir le nouveau mot de passe
     const resetPassword = async (token,password) =>{
         try{
             setError(null)

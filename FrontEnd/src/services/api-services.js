@@ -1,9 +1,9 @@
-
+// Service API : centralise les appels fetch vers le backend
+// Évite de dupliquer fetch/headers dans chaque composant
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:2000/api'
 
-// function helper for the answer
-
+// Helper : parse la réponse et gère les erreurs (401 = déconnexion auto)
 const handleReponse = async(reponse)=>{
     const data = await reponse.json().catch(()=>null)
 
@@ -22,7 +22,7 @@ const handleReponse = async(reponse)=>{
     }
     return data
 }
-// function helper for create the header
+// Helper : crée les headers avec ou sans token (includeAuth=false pour login/register)
 const getHeaders = (includeAuth  = true)=>{
     const headers={
         'Content-Type' : 'application/json',
@@ -37,7 +37,7 @@ const getHeaders = (includeAuth  = true)=>{
 }
 // _________________________AUTHENTICATION AUTH_____________________________
 export const authAPI = {
-    //Sign-up
+    // register : getHeaders(false) car pas encore de token
     register: async(userData) =>{
         const reponse = await fetch(`${API_URL}/auth/register`,{
             method:'POST',
@@ -57,7 +57,7 @@ export const authAPI = {
         return data
     },
 
-    // connexion
+    // login : même principe, pas de token avant la réponse
     login: async(credentials)=>{
         const reponse = await fetch (`${API_URL}/auth/login`,{
             method:'POST',
@@ -76,21 +76,22 @@ export const authAPI = {
         }
         return data
     },
-    // logout
+    // logout : supprime token et user du localStorage (côté client uniquement)
     logout:()=>{
         localStorage.removeItem('token')
         localStorage.removeItem('user')
     },
-    // verified if user is connecte
+    // isAuthenticated : vérifie la présence du token (rapide, pas d'appel API)
     isAuthenticated:()=>{
        return !!localStorage.getItem('token')
     },
 
-     //    Recover actual user
+     // getCurrentUser : lit le user depuis localStorage (évite un appel API /profile)
      getCurrentUser:()=>{
         const user = localStorage.getItem('user')
         return user ? JSON.parse(user) : null
      },
+     // forgotPassword : envoie l'email au backend pour réinitialisation
      forgotPassword: async(email)=>{
         const reponse = await fetch(`${API_URL}/auth/forgot-password`,{
             method: 'POST',
@@ -101,7 +102,7 @@ export const authAPI = {
         return handleReponse(reponse)
      },
       
-    //  reset the password
+    // resetPassword : token reçu par email, permet de définir le nouveau mot de passe
     resetPassword: async (token,password)=>{
         const reponse = await fetch(`${API_URL}/auth/reset-password/${token}`,{
             method:'POST',
@@ -110,7 +111,7 @@ export const authAPI = {
         })
         return handleReponse(reponse)
     },
-    // take te profil of user
+    // getProfil : récupère les infos à jour depuis l'API (plus fiable que localStorage)
     getProfil: async()=>{
         const reponse = await fetch(`${API_URL}/auth/profile`,{
             method:'GET',
@@ -122,7 +123,7 @@ export const authAPI = {
 }
 // ==================== TRANSACTION ====================
 export const transactionAPI = {
-    // Recover all transaction
+    // getAll : getHeaders(true) car route protégée, token requis
     getAll: async()=>{
         const reponse = await fetch(`${API_URL}/transactions`,{
             method: 'GET',
@@ -131,7 +132,7 @@ export const transactionAPI = {
         return handleReponse(reponse)
     },
 
-    //recover one transaction with id
+    // getById : une seule transaction, utile pour l'édition
     getById: async(id)=>{
         const reponse = await fetch(`${API_URL}/transactions/${id}`,{
             method: 'GET',
@@ -139,7 +140,7 @@ export const transactionAPI = {
         })
         return handleReponse(reponse)
     },
-    // create a new transaction
+    // create : POST avec body JSON, le backend attache userId via le token
     create: async(data)=>{
         const reponse = await fetch(`${API_URL}/transactions`,{
             method: 'POST',
@@ -148,7 +149,7 @@ export const transactionAPI = {
         })
         return handleReponse(reponse)
     },
-    // Update of transaction
+    // update : PUT pour mise à jour partielle (PATCH aussi possible)
     update: async(id, data)=>{
         const reponse = await fetch(`${API_URL}/transactions/${id}`, {
       method: 'PUT',
@@ -158,7 +159,7 @@ export const transactionAPI = {
     return handleReponse(reponse);
     },
 
-    //delete one transaction
+    // delete : suppression définitive, le backend vérifie userId
     delete: async(id)=>{
         const reponse = await fetch(`${API_URL}/transactions/${id}`, {
             method: 'DELETE',
@@ -166,7 +167,7 @@ export const transactionAPI = {
           });
           return handleReponse(reponse);
     },
-    // Statiques
+    // getStats : agrégation côté backend (totalIncome, totalExpense, balance)
     getStats: async () => {
         const reponse = await fetch(`${API_URL}/transactions/stats`, {
           method: 'GET',
@@ -174,7 +175,7 @@ export const transactionAPI = {
         });
         return handleReponse(reponse);
 },
-    // Filtrer les transactions
+    // filter : passe les filtres en query params (startDate, endDate, category, type)
     filter: async (filters) => {
         const params = new URLSearchParams(filters);
         const reponse = await fetch(`${API_URL}/transactions/filter?${params}`, {

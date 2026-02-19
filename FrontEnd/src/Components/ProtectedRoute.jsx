@@ -1,4 +1,5 @@
-// componant for secure routes for authenticator
+// Composant wrapper : protège les routes (Dashboard, etc.) des utilisateurs non connectés
+// useAuth() plutôt que vérifier localStorage directement pour garder l'UI synchronisée
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Box, CircularProgress } from "@mui/material";
@@ -7,7 +8,7 @@ const ProtectedRoute = ({children}) =>{
     const {isAuthenticated, loading} = useAuth()
     const location = useLocation()
 
-    // show a loader during verification
+    // Loader pendant la vérification : évite le flash "redirect" puis "contenu"
     if(loading){
         return(
             <Box
@@ -19,11 +20,11 @@ const ProtectedRoute = ({children}) =>{
             </Box>
         )
     }
-    // if no authenticate redirect to Sign-in
+    // Non authentifié : Navigate avec state pour rediriger vers la page après login
     if(!isAuthenticated){
         return <Navigate to="/Sign-in" state={ { from:location } } replace />
     }
-    // if anthenticate  show the contenu
+    // Authentifié : affiche le contenu protégé (ex: Dashboard)
     return children
 }
 export default ProtectedRoute

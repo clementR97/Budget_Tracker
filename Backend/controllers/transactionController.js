@@ -5,7 +5,9 @@ import Transaction from "../models/Transaction.js";
  * @route GET/api/transactions
  * @desc recover all  transactions of user
  * @access Private
-*/
+ */
+// find() plutôt que findOne() car on récupère toutes les transactions de l'utilisateur
+// sort({date:-1}) pour afficher les plus récentes en premier (ordre décroissant)
 export const getTransactions = async(req,res)=>{
     try{
         const transactions = await Transaction.find({userId: req.user._id})
@@ -23,6 +25,7 @@ export const getTransactions = async(req,res)=>{
  * @desc    Récupérer une transaction spécifique
  * @access  Private
  */
+// findOne() avec userId pour éviter qu'un utilisateur accède aux transactions d'un autre
 export const getTransactionById = async (req, res) => {
     try {
       const transaction = await Transaction.findOne({
@@ -46,10 +49,11 @@ export const getTransactionById = async (req, res) => {
  * @desc create a new transaction
  * @access Private
  */
+// new Transaction() + save() plutôt que create() pour valider les données avant l'insertion
 export const createTransaction = async (req,res)=>{
     try{
-        console.log('👤 req.user:', req.user);
-        console.log('🆔 req.user._id:', req.user._id);
+        // console.log('👤 req.user:', req.user);
+        // console.log('🆔 req.user._id:', req.user._id);
 
         const{type,category,amount,description,date} = req.body
 
@@ -73,10 +77,10 @@ export const createTransaction = async (req,res)=>{
             description,
             date: date || Date.now(),
         })
-        console.log('💰 Transaction à créer:', transaction);
+        //console.log('💰 Transaction à créer:', transaction);
 
         await transaction.save()
-        console.log('✅ Transaction créée avec succès');
+        //console.log('✅ Transaction créée avec succès');
 
         res.status(201).json(transaction)
     }catch(error){
@@ -89,6 +93,8 @@ export const createTransaction = async (req,res)=>{
  * @desc    Mettre à jour une transaction
  * @access  Private
  */
+// findOneAndUpdate() pour update atomique en une seule requête DB
+// runValidators:true pour appliquer les validations du schéma sur les champs modifiés
 export const updateTransaction = async(req,res)=>{
     try{
         const {type,category,amount,description,date} = req.body
@@ -133,6 +139,7 @@ export const updateTransaction = async(req,res)=>{
  * @desc    Supprimer une transaction
  * @access  Private
  */
+// findOneAndDelete() pour supprimer en une requête et vérifier que la transaction appartient à l'user
 export const deleteTransaction = async(req,res)=>{
     try{
         const transaction = await Transaction.findOneAndDelete({
@@ -154,6 +161,7 @@ export const deleteTransaction = async(req,res)=>{
  * @desc    Récupérer les statistiques de l'utilisateur
  * @access  Private
  */
+// Délégation au modèle : getStats() centralise la logique métier dans le schéma
 export const getStats = async (req, res) => {
     try {
       const stats = await Transaction.getStats(req.user._id);
@@ -169,7 +177,7 @@ export const getStats = async (req, res) => {
  * @desc    Filtrer les transactions (par date, catégorie, type)
  * @access  Private
  */
-
+// req.query pour les filtres GET : pas de body en GET, les params passent par l'URL
 export const filterTransactions = async(req,res)=>{
     try{
         const{startDate, endDate, category, type} = req.query

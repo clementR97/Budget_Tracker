@@ -32,26 +32,26 @@ ChartJS.register(
 
 const Charts = ({transactions, stats})=>{
 
-    console.log('📊 Charts - transactions:', transactions);
-  console.log('📊 Charts - stats:', stats);
-  console.log('📊 Charts - expensesByCategory:', stats?.expensesByCategory);
+//     console.log('📊 Charts - transactions:', transactions);
+//   console.log('📊 Charts - stats:', stats);
+//   console.log('📊 Charts - expensesByCategory:', stats?.expensesByCategory);
   
     // ==================== GRAPHIQUE 1 : DÉPENSES PAR CATÉGORIE (PIE) ====================
     const expensesByCategoryData = useMemo(()=>{
-        console.log('🥧 Calcul du camembert...');
+        //console.log('🥧 Calcul du camembert...');
         if(!stats?.expensesByCategory){
-            console.log('❌ Pas de expensesByCategory dans stats');
+            //console.log('❌ Pas de expensesByCategory dans stats');
          return null
         }
 
         const categories = Object.keys(stats.expensesByCategory)
         const amounts = Object.values(stats.expensesByCategory)
 
-        console.log('📊 Catégories:', categories);
-    console.log('💰 Montants:', amounts);
+    //     console.log('📊 Catégories:', categories);
+    // console.log('💰 Montants:', amounts);
 
     if (categories.length === 0) {
-        console.log('⚠️ Aucune catégorie de dépenses');
+       // console.log('⚠️ Aucune catégorie de dépenses');
         return null;
       }
         // color for differnce categories
@@ -77,7 +77,7 @@ const Charts = ({transactions, stats})=>{
             }],
           };
           
-          console.log('✅ Données du camembert:', chartData);
+          //console.log('✅ Données du camembert:', chartData);
 
         return chartData
     },[stats]);

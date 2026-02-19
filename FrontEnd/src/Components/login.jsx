@@ -120,12 +120,12 @@ const validateInputs = ()=>{
 
 const handleSubmit = async (e)=>{
     e.preventDefault()
-    console.log('🔄 Formulaire soumis');
+    //console.log('🔄 Formulaire soumis');
     // remove last error
     if(error) setError(null)
         // valid inputs
     if(!validateInputs()){
-        console.log('❌ Validation échouée');
+        //console.log('❌ Validation échouée');
         return
     }
 
@@ -135,12 +135,12 @@ const handleSubmit = async (e)=>{
         email: formData.get('email'),
         password: formData.get('password')
     }
-    console.log('📤 Envoi des données:', credentials);
+    //console.log('📤 Envoi des données:', credentials);
     try{
         // call API of connexion
         const result= await login(credentials)
-        console.log('✅ Connexion réussie:', result);
-        console.log('🚀 Navigation vers dashboard');
+        // console.log('✅ Connexion réussie:', result);
+        // console.log('🚀 Navigation vers dashboard');
 
         // Redirected to dashboard after a succes connexion
         //window.location.href = '/dashboard';

@@ -9,10 +9,12 @@ connectDB()
 
 const app = express()
 
-
+// express.json() : parse le body JSON des requêtes POST/PUT
+// urlencoded : parse les formulaires HTML (form-data)
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-// configure of CORS
+// CORS : autorise l'app frontend (port 5173) à appeler l'API
+// credentials:true pour envoyer les cookies/token
 app.use(cors({
   origin:process.env.CLIENT_URL || 'http://localhost:5173',
   credentials:true,
@@ -35,7 +37,7 @@ app.get('/', (req, res) => {
     })
 })
 
-// Road no find
+// Middleware 404 : route non trouvée (doit être après les routes définies)
 app.use((req,res)=>{
     res.status(404).json({
       message: 'Route non trouvée',
@@ -43,7 +45,8 @@ app.use((req,res)=>{
     })
 })
 
-// gestion of error generaly
+// Middleware d'erreur : capture les erreurs non gérées
+// En dev on expose err.message, en prod on masque les détails
 app.use((err,req,res,next)=>{
   console.error('Erreur serveur:',err)
     res.status(500).json({
@@ -52,11 +55,11 @@ app.use((err,req,res,next)=>{
     })
  })
 
-// start the server
+// Démarrage du serveur : PORT depuis .env ou 2000 par défaut
 const PORT = process.env.PORT || 2000
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur lancé sur le port ${PORT}`);
-  console.log(`📍 API disponible sur http://localhost:${PORT}`);
-  console.log(`🔐 Auth: http://localhost:${PORT}/api/auth`);
-  console.log(`💰 Transactions: http://localhost:${PORT}/api/transactions`);
+   console.log(`🚀 Serveur lancé sur le port ${PORT}`);
+  // console.log(`📍 API disponible sur http://localhost:${PORT}`);
+  // console.log(`🔐 Auth: http://localhost:${PORT}/api/auth`);
+  // console.log(`💰 Transactions: http://localhost:${PORT}/api/transactions`);
 })
