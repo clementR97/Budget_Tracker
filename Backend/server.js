@@ -21,11 +21,7 @@ app.use(cors({
   methods:['GET','POST','PUT','DELETE','PATCH'],
   allowedHeaders:['Content-Type','Authorization'],
 }))
-// Road of authentification
-app.use('/api/auth',authRouter)
 
-// Road of transaction
-app.use('/api/transactions',transactionRoutes)
 
 app.get('/', (req, res) => {
   res.json({ 
@@ -36,6 +32,11 @@ app.get('/', (req, res) => {
       transactions: '/api/transactions' }
     })
 })
+// Road of authentification
+app.use('/api/auth',authRouter)
+
+// Road of transaction
+app.use('/api/transactions',transactionRoutes)
 
 // Middleware 404 : route non trouvée (doit être après les routes définies)
 app.use((req,res)=>{
