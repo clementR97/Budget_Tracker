@@ -32,10 +32,16 @@ app.get('/', (req, res) => {
       transactions: '/api/transactions' }
     })
 })
+
+app.use('/api/auth', (req, res, next) => {
+  console.log('🔍 Requête auth reçue:', req.method, req.path)
+  next()
+})
+
 // Road of authentification
 app.use('/api/auth',authRouter)
 console.log('✅ authRouter type:', typeof authRouter)
-console.log('✅ authRouter:', authRouter)
+//console.log('✅ authRouter:', authRouter)
 
 // Road of transaction
 app.use('/api/transactions',transactionRoutes)
