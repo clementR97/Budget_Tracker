@@ -34,9 +34,12 @@ app.get('/', (req, res) => {
 })
 // Road of authentification
 app.use('/api/auth',authRouter)
+console.log('✅ authRouter type:', typeof authRouter)
+console.log('✅ authRouter:', authRouter)
 
 // Road of transaction
 app.use('/api/transactions',transactionRoutes)
+console.log('✅ transactionRoutes type:', typeof transactionRoutes)
 
 // Middleware 404 : route non trouvée (doit être après les routes définies)
 app.use((req,res)=>{
