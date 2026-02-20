@@ -16,7 +16,7 @@ app.use(express.urlencoded({extended: true}))
 // CORS : autorise l'app frontend (port 5173) à appeler l'API
 // credentials:true pour envoyer les cookies/token
 app.use(cors({
-  origin:process.env.CLIENT_URL || 'http://localhost:5173',
+  origin:process.env.CLIENT_URL || '*',
   credentials:true,
   methods:['GET','POST','PUT','DELETE','PATCH'],
   allowedHeaders:['Content-Type','Authorization'],
