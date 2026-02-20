@@ -33,6 +33,10 @@ app.get('/', (req, res) => {
     })
 })
 
+// ⭐ TEST DIRECT - Ajouter cette ligne
+app.get('/api/auth/test', (req, res) => {
+  res.json({ message: '✅ Route de test auth fonctionne' })
+})
 app.use('/api/auth', (req, res, next) => {
   console.log('🔍 Requête auth reçue:', req.method, req.path)
   next()
