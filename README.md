@@ -12,11 +12,14 @@
 
 ---
 
-## 🌟 Démonstration
+## 🌟 Démonstration en ligne
 
-**🔗 [Voir l'application en ligne](#)** *(Ajoutez votre lien Vercel/Railway ici)*
+**🔗 [Voir l'application en ligne](https://mon-budget-tracker-gold.vercel.app)** 
 
-![Demo](./screenshots/demo.gif)
+![Demo](./ScreenShoots/demo.gif)
+**Compte de test :**
+- Email : `clem@mail.com`
+- Mot de passe : `1234azerty`
 
 ---
 
@@ -30,6 +33,7 @@
 - [Utilisation](#-utilisation)
 - [API Endpoints](#-api-endpoints)
 - [Sécurité](#-sécurité)
+- [Problèmes rencontrés](#-problèmes-rencontrés-et-solutions)
 - [Roadmap](#-roadmap)
 - [Auteur](#-auteur)
 
@@ -298,6 +302,54 @@ VITE ready in ... ms
 5. Explorez les graphiques !
 
 ---
+## 🌐 Déploiement
+
+### Backend sur Railway
+
+1. Créez un compte sur [Railway.app](https://railway.app)
+2. **New Project** → **Deploy from GitHub repo**
+3. Sélectionnez votre repo
+4. **Settings** → **Root Directory** : `Backend`
+5. **Variables** → Ajoutez :
+   ```env
+   PORT=2000
+   MONGO_URI=votre_mongodb_atlas_uri
+   JWT_SECRET=votre_secret_production
+   JWT_EXPIRES_IN=30d
+   NODE_ENV=production
+   CLIENT_URL=https://votre-domaine.vercel.app
+   ```
+6. **Settings** → **Networking** → **Generate Domain**
+7. Copiez l'URL : `https://votre-app.up.railway.app`
+
+---
+
+### Frontend sur Vercel
+
+1. Créez un compte sur [Vercel.com](https://vercel.com)
+2. **New Project** → Import votre repo GitHub
+3. **Configure** :
+   - **Root Directory** : `Frontend`
+   - **Framework Preset** : Vite
+4. **Environment Variables** :
+   ```env
+   VITE_API_URL=https://votre-app.up.railway.app/api
+   ```
+5. **Deploy**
+6. Copiez l'URL de production
+
+---
+
+### MongoDB Atlas (gratuit)
+
+1. Créez un compte sur [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. Créez un cluster M0 (gratuit)
+3. **Database Access** → Créez un utilisateur
+4. **Network Access** → Ajoutez `0.0.0.0/0` (accès depuis partout)
+5. **Connect** → Copiez l'URI de connexion
+6. Ajoutez l'URI dans Railway (`MONGO_URI`)
+
+---
 
 ## 📖 Utilisation
 
@@ -425,6 +477,254 @@ Transaction.findOneAndDelete({
 ```
 
 ---
+## 🐛 Problèmes rencontrés et solutions
+
+Au cours du développement et du déploiement, plusieurs défis ont été surmontés :
+
+### 1. **Erreur : "Can't find variable: id" (Frontend)**
+
+**Problème :** 
+```
+TypeError: Can't find variable: id
+```
+
+**Cause :** Confusion entre `req.params.id` et `req.user._id` dans le contrôleur de suppression.
+
+**Solution :**
+```javascript
+// ❌ Incorrect
+const transaction = await Transaction.findOneAndDelete({
+  _id: req.params.id,
+  userId: req.params.id  // Erreur : devrait être req.user._id
+});
+
+// ✅ Correct
+const transaction = await Transaction.findOneAndDelete({
+  _id: req.params.id,      // ID de la transaction
+  userId: req.user._id     // ID de l'utilisateur connecté
+});
+```
+
+**Leçon :** Toujours vérifier l'origine des variables (`req.params` vs `req.user` vs `req.body`).
+
+---
+
+### 2. **Graphique en camembert invisible**
+
+**Problème :** Le graphique des dépenses par catégorie ne s'affichait pas.
+
+**Cause :** Faute de frappe dans le nom de la propriété :
+```javascript
+// Backend retournait
+expenseByCategory: { ... }
+// Frontend cherchait
+expensesByCategory
+```
+
+**Solution :**
+```javascript
+// Backend/models/Transaction.js
+const expensesByCategory = transactions  // ✅ Avec "s"
+  .filter((t) => t.type === 'expense')
+  .reduce((acc, t) => {
+    acc[t.category] = (acc[t.category] || 0) + t.amount;
+    return acc;
+  }, {});
+
+return {
+  totalIncome,
+  totalExpense,
+  balance,
+  expensesByCategory,  // ✅ Cohérent avec le frontend
+  transactionCount: transactions.length,
+};
+```
+
+**Leçon :** TypeScript aurait détecté cette erreur automatiquement. La cohérence des noms est cruciale.
+
+---
+
+### 3. **Erreur 404 sur routes `/api/auth` en production**
+
+**Problème :** Les routes fonctionnaient en local mais pas sur Railway.
+```json
+{"message":"Route non trouvée","path":"/api/auth/login"}
+```
+**Cause :** Variable d'environnement MongoDB différente entre local et production :
+- Local : `MONGO_URI`
+- Production : `MONGODB_URI`
+
+**Solution :** Uniformiser le nom de la variable partout :
+```javascript
+// config/db.js
+const conn = await mongoose.connect(process.env.MONGO_URI)  // ✅ Cohérent
+```
+
+Et dans Railway : utiliser `MONGO_URI` au lieu de `MONGODB_URI`.
+
+**Leçon :** Les variables d'environnement doivent être cohérentes entre tous les environnements.
+
+---
+
+### 4. **Erreur CORS lors du déploiement**
+
+**Problème :**
+```
+Access-Control-Allow-Origin error
+Origin https://budget-tracker-xxxxx.vercel.app is not allowed
+```
+
+**Cause :** L'URL Vercel change à chaque déploiement (URLs de preview vs production).
+
+**Solution :**
+1. Utiliser **l'URL de production** Vercel dans `CLIENT_URL` Railway
+2. Ou autoriser toutes les URLs Vercel :
+```javascript
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true)
+    if (origin.includes('vercel.app') || origin.includes('localhost')) {
+      return callback(null, true)
+    }
+    callback(new Error('Not allowed by CORS'))
+  },
+  credentials: true
+}))
+```
+
+**Leçon :** En production, distinguer URLs de production vs URLs de preview.
+
+---
+
+### 5. **Routes auth retournent 404 mais transactions fonctionnent**
+
+**Problème :** 
+- `/api/transactions` fonctionne ✅
+- `/api/auth/login` retourne 404 ❌
+
+**Cause :** Test avec méthode HTTP incorrecte (GET au lieu de POST).
+
+**Diagnostic :**
+```bash
+# ❌ Test avec GET dans le navigateur
+https://api.railway.app/api/auth/login  # 404
+
+# ✅ Test avec POST via curl
+curl -X POST https://api.railway.app/api/auth/login  # Fonctionne
+```
+
+**Solution :** Tester les routes POST avec Postman, curl ou Thunder Client, pas le navigateur.
+
+**Leçon :** Les routes POST ne peuvent pas être testées directement dans le navigateur.
+
+---
+
+### 6. **Serveur démarre avant MongoDB**
+
+**Problème :** Routes indisponibles même si le serveur démarre.
+
+**Cause :** Le serveur démarre avant que MongoDB soit connecté :
+```javascript
+// ❌ Incorrect
+connectDB()  // Asynchrone
+app.listen(PORT, ...)  // Démarre avant la connexion
+```
+
+**Solution :**
+```javascript
+// ✅ Correct
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log('🚀 Serveur lancé sur le port', PORT)
+    })
+  })
+  .catch((err) => {
+    console.error('❌ Impossible de démarrer:', err)
+    process.exit(1)
+  })
+```
+**Leçon :** Toujours attendre les opérations asynchrones critiques avant de démarrer le serveur.
+
+---
+
+### 7. **MongoDB ne se connecte pas sur Railway**
+
+**Problème :**
+```
+Error: MongooseServerSelectionError: connect ETIMEDOUT
+```
+
+**Cause :** MongoDB Atlas bloque les connexions par IP.
+
+**Solution :**
+1. MongoDB Atlas → **Network Access**
+2. **Add IP Address** → **Allow Access from Anywhere** (0.0.0.0/0)
+3. Confirmer
+
+**Leçon :** En production, Railway utilise des IPs dynamiques, d'où la nécessité d'autoriser toutes les IPs.
+
+---
+
+### 8. **Navigation ne fonctionne pas après login**
+
+**Problème :** Login réussit mais ne redirige pas vers le dashboard.
+
+**Cause :** `useNavigate` mal initialisé ou `useEffect` manquant.
+
+**Solution :**
+```javascript
+// Dans Login.jsx
+const navigate = useNavigate()
+const { user, login } = useAuth()
+
+// Redirection automatique après login
+useEffect(() => {
+  if (user) {
+    navigate('/dashboard', { replace: true })
+   }
+}, [user, navigate])
+
+// Fallback si useEffect ne marche pas
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  await login(credentials)
+  
+  setTimeout(() => {
+    if (window.location.pathname !== '/dashboard') {
+      window.location.href = '/dashboard'
+    }
+  }, 500)
+}
+```
+
+**Leçon :** Combiner `useEffect` pour l'auto-redirection et `window.location` comme fallback.
+
+---
+
+## 📚 Leçons apprises
+ 
+### **Développement :**
+1. ✅ Toujours tester les APIs avec Postman avant d'intégrer au frontend
+2. ✅ Ajouter des `console.log` stratégiques pour déboguer efficacement
+3. ✅ TypeScript aurait évité 50% des bugs (fautes de frappe, types)
+4. ✅ Utiliser le même pattern d'export partout (export default vs export named)
+
+### **Déploiement :**
+1. ✅ Variables d'environnement cohérentes entre dev/prod
+2. ✅ Toujours utiliser les URLs de production, pas les previews
+3. ✅ CORS doit autoriser l'URL exacte du frontend
+4. ✅ MongoDB Atlas nécessite 0.0.0.0/0 pour Railway
+5. ✅ Tester le backend via curl/Postman avant de déboguer le frontend
+
+### **Debugging :**
+1. ✅ Logs Railway/Vercel sont essentiels pour diagnostiquer les erreurs
+2. ✅ Onglet Network du navigateur (F12) montre les vraies requêtes
+3. ✅ Tester chaque composant isolément (backend, frontend, database)
+4. ✅ Ne pas hésiter à ajouter des routes de test temporaires
+
+---
+
 
 ## 🚧 Roadmap
 

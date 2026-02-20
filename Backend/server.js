@@ -34,22 +34,22 @@ app.get('/', (req, res) => {
 })
 
 // ⭐ TEST DIRECT - Ajouter cette ligne
-app.get('/api/auth/test', (req, res) => {
-  res.json({ message: '✅ Route de test auth fonctionne' })
-})
-app.use('/api/auth', (req, res, next) => {
-  console.log('🔍 Requête auth reçue:', req.method, req.path)
-  next()
-})
+// app.get('/api/auth/test', (req, res) => {
+//   res.json({ message: '✅ Route de test auth fonctionne' })
+// })
+// app.use('/api/auth', (req, res, next) => {
+//   console.log('🔍 Requête auth reçue:', req.method, req.path)
+//   next()
+// })
 
 // Road of authentification
 app.use('/api/auth',authRouter)
-console.log('✅ authRouter type:', typeof authRouter)
+//console.log('✅ authRouter type:', typeof authRouter)
 //console.log('✅ authRouter:', authRouter)
 
 // Road of transaction
 app.use('/api/transactions',transactionRoutes)
-console.log('✅ transactionRoutes type:', typeof transactionRoutes)
+//console.log('✅ transactionRoutes type:', typeof transactionRoutes)
 
 // Middleware 404 : route non trouvée (doit être après les routes définies)
 app.use((req,res)=>{
