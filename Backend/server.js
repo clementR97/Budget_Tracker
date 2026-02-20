@@ -59,9 +59,15 @@ app.use((err,req,res,next)=>{
 // Démarrage du serveur : PORT depuis .env ou 2000 par défaut
 const PORT = process.env.PORT || 2000
 connectDB()
-app.listen(PORT, () => {
-   console.log(`🚀 Serveur lancé sur le port ${PORT}`);
-   console.log(`📍 API disponible sur http://localhost:${PORT}`);
-   console.log(`🔐 Auth: http://localhost:${PORT}/api/auth`);
-   console.log(`💰 Transactions: http://localhost:${PORT}/api/transactions`);
-})
+    .then(()=>{
+      app.listen(PORT, () => {
+      console.log(`🚀 Serveur lancé sur le port ${PORT}`);
+      console.log(`📍 API disponible sur http://localhost:${PORT}`);
+      console.log(`🔐 Auth: http://localhost:${PORT}/api/auth`);
+      console.log(`💰 Transactions: http://localhost:${PORT}/api/transactions`);
+    })
+    })
+    .catch((err)=>{
+      console.error('❌ Impossible de démarrer le serveur:', err)
+      process.exit(1)
+    })
